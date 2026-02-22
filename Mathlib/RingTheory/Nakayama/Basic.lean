@@ -5,6 +5,7 @@ Authors: Chris Hughes
 -/
 module
 
+public import Mathlib.LinearAlgebra.Isomorphisms
 public import Mathlib.RingTheory.Finiteness.Basic
 public import Mathlib.RingTheory.Finiteness.Nakayama
 public import Mathlib.RingTheory.Jacobson.Ideal
@@ -237,26 +238,13 @@ or the image of `N` under the `R`-module quotient map `M → M / (I • N)`.
 noncomputable def quotientIdealSubmoduleEquivMap (N : Submodule R M) (I : Ideal R) :
     (N ⧸ (I • ⊤ : Submodule R N)) ≃ₗ[R] (map (I • N).mkQ N) := by
   -- TODO: find a better place for this equivalence
-  refine LinearEquiv.ofBijective ?_ ⟨?_, ?_⟩
-  · refine Submodule.liftQ _ ?_ ?_
-    · exact {
-        toFun x := by
-          rcases x with ⟨x, hx⟩
-          use ((I • N).mkQ x), x, hx
-        map_add' := by simp
-        map_smul' := by simp
-      }
-    · intro x hx
-      rw [mem_smul_top_iff] at hx
-      simp [hx]
-  · rw [← LinearMap.ker_eq_bot, LinearMap.ker_eq_bot']
-    intro x hx
-    induction x using Submodule.Quotient.induction_on with | H x =>
-    simp only [mkQ_apply, liftQ_apply, LinearMap.coe_mk, AddHom.coe_mk, mk_eq_zero,
-      Quotient.mk_eq_zero] at hx
-    simp only [Quotient.mk_eq_zero, mem_smul_top_iff, hx]
-  · rintro ⟨_, ⟨x, hx, rfl⟩⟩
-    use Quotient.mk ⟨x, hx⟩
-    simp
+  set f := (I • N).mkQ ∘ₗ N.subtype
+  have hker : f.ker = I • ⊤ := by
+    ext x
+    simpa [f] using Iff.symm (mem_smul_top_iff I N x)
+  have hrange : f.range = map (I • N).mkQ N := by
+    simp only [LinearMap.range_comp, range_subtype, f]
+  exact (Submodule.quotEquivOfEq _ _ hker.symm).trans
+    (f.quotKerEquivRange.trans (LinearEquiv.ofEq _ _ hrange))
 
 end Submodule
