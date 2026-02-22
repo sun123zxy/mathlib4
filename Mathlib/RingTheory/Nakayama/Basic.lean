@@ -5,7 +5,6 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.LinearAlgebra.Isomorphisms
 public import Mathlib.RingTheory.Finiteness.Basic
 public import Mathlib.RingTheory.Finiteness.Nakayama
 public import Mathlib.RingTheory.Jacobson.Ideal
@@ -229,22 +228,5 @@ theorem exists_injOn_mkQ_image_span_eq_of_span_eq_map_mkQ_of_le_jacobson_bot
   · simp [Set.image_image]
   · symm; apply eq_of_map_mkQ_eq_map_mkQ_of_le_jacobson_bot hN hIjac
     simp [← hsspan, map_span, Set.image_image]
-
-/--
-The linear equivalence of the two definitions of `N / I • N`,
-either as a quotient of `N` by its submodule `I • ⊤`,
-or the image of `N` under the `R`-module quotient map `M → M / (I • N)`.
--/
-noncomputable def quotientIdealSubmoduleEquivMap (N : Submodule R M) (I : Ideal R) :
-    (N ⧸ (I • ⊤ : Submodule R N)) ≃ₗ[R] (map (I • N).mkQ N) := by
-  -- TODO: find a better place for this equivalence
-  set f := (I • N).mkQ ∘ₗ N.subtype
-  have hker : f.ker = I • ⊤ := by
-    ext x
-    simpa [f] using Iff.symm (mem_smul_top_iff I N x)
-  have hrange : f.range = map (I • N).mkQ N := by
-    simp only [LinearMap.range_comp, range_subtype, f]
-  exact (Submodule.quotEquivOfEq _ _ hker.symm).trans
-    (f.quotKerEquivRange.trans (LinearEquiv.ofEq _ _ hrange))
 
 end Submodule
