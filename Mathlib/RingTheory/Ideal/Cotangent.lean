@@ -297,7 +297,7 @@ the span rank of the maximal ideal, if the maximal ideal is finitely generated.
 -/
 theorem rank_cotangentSpace_eq_spanrank_maximalIdeal (hm : (maximalIdeal R).FG) :
     Module.rank (ResidueField R) (CotangentSpace R) = (maximalIdeal R).spanRank := by
-  rw [Submodule.spanRank_eq_spanRank_quotient_ideal_quotientIdealSubmodule
+  rw [← Submodule.spanRank_quotient_ideal_quotientIdealSubmodule_eq
     hm (maximalIdeal_le_jacobson _), Submodule.rank_eq_spanRank_of_free]
 
 open Module
