@@ -19,8 +19,13 @@ public import Mathlib.RingTheory.Nakayama
 # The module `I ⧸ I ^ 2`
 
 In this file, we provide special API support for the module `I ⧸ I ^ 2`. The official
-definition is a quotient module of `I`, but the alternative definition as an ideal of `R ⧸ I ^ 2` is
-also given, and the two are `R`-equivalent as in `Ideal.cotangentEquivIdeal`.
+definition is a quotient module of `I`, but there are two alternative definitions:
+
+- as an ideal of `R ⧸ I ^ 2`,
+- as the image of `I` under the `R`-module quotient map `R → R / (I ^ 2)`
+
+They are shown to be `R`-linear equivalent to the official definition via
+`Ideal.cotangentEquivIdeal` and `Ideal.cotangentEquivSubmodule` respectively.
 
 Additional support is also given to the cotangent space `m ⧸ m ^ 2` of a local ring.
 
@@ -223,6 +228,19 @@ def mapCotangent (I₁ : Ideal A) (I₂ : Ideal B) (f : A →ₐ[R] B) (h : I₁
 lemma mapCotangent_toCotangent
     (I₁ : Ideal A) (I₂ : Ideal B) (f : A →ₐ[R] B) (h : I₁ ≤ I₂.comap f) (x : I₁) :
     Ideal.mapCotangent I₁ I₂ f h (Ideal.toCotangent I₁ x) = Ideal.toCotangent I₂ ⟨f x, h x.2⟩ := rfl
+
+/-- `I ⧸ I ^ 2` as the image of `I` under the `R`-module quotient map `R → R / (I ^ 2)`. -/
+def cotangentSubmodule (I : Ideal R) : Submodule R (R ⧸ I ^ 2) :=
+  Submodule.map (I ^ 2).mkQ I
+
+/--
+The linear equivalence of the two definitions of `I / I ^ 2`,
+either as a quotient of `I` by its submodule `I • ⊤`,
+or the image of `I` under the `R`-module quotient map `R → R / (I ^ 2)`.
+-/
+noncomputable def cotangentEquivSubmodule (I : Ideal R) :
+    I.Cotangent ≃ₗ[R] (Submodule.map (I ^ 2).mkQ I) := by
+  rw [pow_two]; exact Submodule.quotientIdealSubmoduleEquivMap I I
 
 end Ideal
 
