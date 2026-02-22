@@ -33,13 +33,13 @@ theorem spanRank_eq_spanRank_map_mkQ_of_le_jacobson_bot
     (hN : N.FG) (hIjac : I ≤ Ideal.jacobson ⊥) :
     N.spanRank = (map (I • N).mkQ N).spanRank := by
   apply le_antisymm
-  · rcases exists_span_set_card_eq_spanRank (map (I • N).mkQ N) with ⟨s, ⟨hscard, hsspan⟩⟩
-    rcases exists_injOn_mkQ_image_span_eq_of_span_eq_map_mkQ_of_le_jacobson_bot s hN hIjac hsspan
-      with ⟨t, hinj, heq, htspan⟩
+  · obtain ⟨s, hscard, hsspan⟩ := exists_span_set_card_eq_spanRank (map (I • N).mkQ N)
+    obtain ⟨t, hinj, heq, htspan⟩ :=
+      exists_injOn_mkQ_image_span_eq_of_span_eq_map_mkQ_of_le_jacobson_bot s hN hIjac hsspan
     rw [FG.spanRank_le_iff_exists_span_set_card_le]
-    use t, ?_, htspan
+    refine ⟨t, ?_, htspan⟩
     rw [← hscard, ← heq]
-    exact le_of_eq (Cardinal.mk_image_eq_of_injOn _ _ hinj).symm
+    exact (Cardinal.mk_image_eq_of_injOn _ _ hinj).ge
   · apply spanRank_map_le
 
 /--
